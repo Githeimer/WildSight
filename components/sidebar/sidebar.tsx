@@ -115,7 +115,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
 
   // Define navigation items
   const navigationItems: NavigationItem[] = [
-    { icon: <Home size={20} />, label: "Dashboard", href: "/dashboard" },
+    { icon: <Home size={20} />, label: "Dashboard", href: "/" },
+    {icon: <Home size={20} />, label: "Register Animal", href: "/animal/register" },
     { icon: <Activity size={20} />, label: "Live Tracking", href: "/live-tracking" },
     { icon: <BarChart2 size={20} />, label: "Analytics", href: "/analytics" },
     { icon: <Bell size={20} />, label: "Alerts", href: "/alerts" }
