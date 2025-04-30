@@ -1,6 +1,5 @@
 import React from 'react';
 import Sidebar from '@/components/sidebar/sidebar';
-import AlertStatusCard from '@/components/sidebar/AlertStatusCard';
 export default function UserLayout({
   children,
 }: {

@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { signOut } from 'next-auth/react';
 
 // TypeScript interfaces
 interface NavItemProps {
@@ -117,7 +118,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const navigationItems: NavigationItem[] = [
     { icon: <Home size={20} />, label: "Dashboard", href: "/" },
     {icon: <Home size={20} />, label: "Register Animal", href: "/animal/register" },
-    { icon: <Activity size={20} />, label: "Live Tracking", href: "/live-tracking" },
+    { icon: <Activity size={20} />, label: "Live Tracking", href: "/livetracking" },
     { icon: <BarChart2 size={20} />, label: "Analytics", href: "/analytics" },
     { icon: <Bell size={20} />, label: "Alerts", href: "/alerts" }
   ];
@@ -128,7 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
     label: "Logout", 
     href: "#",
     onClick: () => {
-      console.log("Logout clicked");
+      signOut();
       // Implement your logout logic here
     } 
   };

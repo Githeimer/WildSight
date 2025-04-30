@@ -56,8 +56,7 @@ const AnimalRegistrationForm = () => {
   const [availableDevices, setAvailableDevices] = useState<Device[]>([]);
 
   const speciesOptions: string[] = [
-    "Tiger", "Wolf", "Bear", "Elephant", "Lion",
-    "Giraffe", "Rhino", "Gorilla", "Panda", "Zebra"
+  "Tiger","Elephant","Rhino","Red Panda","Leopard","Bear"
   ];
 
   useEffect(() => {

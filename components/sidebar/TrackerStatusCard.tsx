@@ -3,11 +3,9 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 
 // Signal strength icon component
 const SignalIcon: React.FC<{ strength: number }> = ({ strength }) => {
-  // Signal strength should be between 0-4
   const bars = [
     { height: "h-2", opacity: strength >= 1 ? "opacity-100" : "opacity-30" },
     { height: "h-3", opacity: strength >= 2 ? "opacity-100" : "opacity-30" },
@@ -44,12 +42,12 @@ const TrackerStatusCard: React.FC<TrackerStatusCardProps> = ({
   signalStrength = 4,
   className
 }) => {
-  const offlineCount = totalCount - activeCount;
+  const offlineCount = totalCount;
   const activePercentage = (activeCount / totalCount) * 100;
 
   return (
     <Card className={cn("shadow-sm", className)}>
-      <CardContent className="p-6">
+      <CardContent className="p-6 w-[300px] md:w-[500px]">
         <div className="flex justify-between items-start">
           <h3 className="text-gray-700 font-medium text-lg">Active Trackers</h3>
           <SignalIcon strength={signalStrength} />
@@ -57,9 +55,9 @@ const TrackerStatusCard: React.FC<TrackerStatusCardProps> = ({
 
         <div className="mt-2">
           <div className="flex items-end gap-1">
-            <span className="text-4xl font-bold text-gray-900">{activeCount}/{totalCount}</span>
+            <span className="text-4xl font-bold text-gray-900">{offlineCount}/{totalCount}</span>
           </div>
-          <p className="text-gray-500 mt-1">{offlineCount} devices offline</p>
+          <p className="text-gray-500 mt-1">{offlineCount} devices being used</p>
         </div>
 
         {/* Custom progress bar implementation */}

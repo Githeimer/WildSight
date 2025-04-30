@@ -17,7 +17,7 @@ const AlertStatusCard: React.FC<AlertStatusCardProps> = ({
   warningCount,
   className
 }) => {
-  const totalAlerts = criticalCount + warningCount;
+  const totalAlerts = criticalCount + warningCount
   
   // Calculate the percentage of critical alerts for the progress bar
   const criticalPercentage = totalAlerts > 0 
@@ -26,7 +26,7 @@ const AlertStatusCard: React.FC<AlertStatusCardProps> = ({
 
   return (
     <Card className={cn("shadow-sm", className)}>
-      <CardContent className="p-6">
+      <CardContent className="p-6 w-[300px] md:w-[500px]">
         <div className="flex justify-between items-start">
           <h3 className="text-gray-700 font-medium text-lg">Active Alerts</h3>
           <AlertTriangle className="h-5 w-5 text-red-500" />
