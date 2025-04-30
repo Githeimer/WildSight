@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+    // http://localhost:3000/api/tracking?device_id=12345
   const device_id = req.nextUrl.searchParams.get("device_id");
 
   if (!device_id) {
