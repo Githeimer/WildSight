@@ -1,5 +1,6 @@
 import React from 'react';
 import Sidebar from '@/components/sidebar/sidebar';
+import AlertStatusCard from '@/components/sidebar/AlertStatusCard';
 export default function UserLayout({
   children,
 }: {
@@ -8,9 +9,9 @@ export default function UserLayout({
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto p-6">
-        {children}
-      </main>
+  <main className='flex-1 overflow-auto p-6'>
+    {children}
+    </main>
     </div>
   );
 }
