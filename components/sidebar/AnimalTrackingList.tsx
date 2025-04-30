@@ -1,23 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-// Removed useRouter as it's not used
-// import { useRouter } from 'next/navigation'; 
 import { 
-  // Removed icons not used in the simplified list:
-  // Search, 
-  // Filter, 
-  // ChevronDown, 
-  // MapPin, 
-  // Battery, 
-  // AlertTriangle,
-  // X
-  Calendar // Keep Calendar for updated_at
+  Calendar
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Import necessary shadcn UI components
-// Removed Input, Button, Badge (unless needed later), DropdownMenu*, Select*
 import {
   Table,
   TableBody,
@@ -27,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// Type definitions matching the database schema from the image
+// Type definitions matching the database schema
 export interface Animal {
   id: number;          // int4
   tag_id: string;      // varchar
@@ -40,7 +29,7 @@ export interface Animal {
   device_id: number | null;  // int4
 }
 
-// Interface for component props - keeping flexibility
+// Interface for component props
 export interface AnimalTrackingListProps {
   animals?: Animal[]; // Allow passing animals externally
   isLoading?: boolean; // Allow passing loading state externally
@@ -48,7 +37,7 @@ export interface AnimalTrackingListProps {
   className?: string;
 }
 
-// Custom hook for fetching animal data - updated for new schema
+// Enhanced custom hook for fetching animal data
 const useAnimals = () => {
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -58,35 +47,51 @@ const useAnimals = () => {
     const fetchAnimals = async () => {
       try {
         setIsLoading(true);
-        setError(null); // Reset error on new fetch
-        // Use the specified API endpoint
-        const response = await fetch('/api/animals/all'); 
+        setError(null);
         
+        console.log("Fetching animals from API...");
+        
+        // Make the API request
+        const response = await fetch('/api/animal/all');
+        
+        // Handle non-OK response
         if (!response.ok) {
-          throw new Error(`Failed to fetch animals: ${response.statusText}`);
+          throw new Error(`API responded with status: ${response.status} ${response.statusText}`);
         }
         
+        // Parse the JSON response
         const data = await response.json();
-        // TODO: Add validation here to ensure data matches the Animal interface
-        setAnimals(data); 
+        
+        // Check if data is an array
+        if (!Array.isArray(data)) {
+          console.warn("API did not return an array:", data);
+          
+          // If the API returned an error object, throw it
+          if (data.error) {
+            throw new Error(`API error: ${data.error}`);
+          }
+          
+          // Default to empty array for safety
+          setAnimals([]);
+          return;
+        }
+        
+        console.log(`Received ${data.length} animals from API`);
+        setAnimals(data);
       } catch (err) {
-        console.error("Error fetching animals:", err); // Log the actual error
+        console.error("Error in useAnimals hook:", err);
         setError(err instanceof Error ? err : new Error('An unknown error occurred'));
-        setAnimals([]); // Clear animals on error
+        setAnimals([]);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchAnimals();
-  }, []); // Empty dependency array means fetch only once on mount
+  }, []);
 
   return { animals, isLoading, error };
 };
-
-// --- Removed Demo Data as it doesn't match the new schema ---
-
-// --- Removed Filter and Sorting Types ---
 
 const AnimalTrackingList: React.FC<AnimalTrackingListProps> = ({
   animals: externalAnimals,
@@ -102,20 +107,11 @@ const AnimalTrackingList: React.FC<AnimalTrackingListProps> = ({
   const animals = externalAnimals || fetchedAnimals;
   const isLoading = externalIsLoading !== undefined ? externalIsLoading : fetchIsLoading;
 
-  // --- Removed state for search, filters, sorting ---
-  // --- Removed useEffect for filtering/sorting ---
-
-  // --- Removed filter change handlers ---
-  // --- Removed clearAllFilters ---
-  // --- Removed search change handler ---
-  // --- Removed sort handlers ---
-
-  // Format date for display (simplified for updated_at)
+  // Format date for display
   const formatDate = (dateString: string): string => {
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
-      // Example format: Jan 1, 2023, 10:30 AM - adjust as needed
       return date.toLocaleString(undefined, { 
         dateStyle: 'medium', 
         timeStyle: 'short' 
@@ -126,46 +122,56 @@ const AnimalTrackingList: React.FC<AnimalTrackingListProps> = ({
     }
   };
 
-  // --- Removed renderStatusBadge ---
-  // --- Removed renderBatteryLevel ---
-
   // Handler for clicking on an animal row
   const handleAnimalClick = (animal: Animal) => {
     if (onAnimalSelect) {
       onAnimalSelect(animal);
     }
-    // Add navigation or other actions here if needed
-    // e.g., router.push(`/animals/${animal.id}`);
   };
+
+  // Determine content state message
+  let contentState = null;
+  
+  if (isLoading) {
+    contentState = (
+      <div className="py-32 text-center text-gray-500">
+        <div className="inline-block animate-spin mr-2">⏳</div> Loading animals...
+      </div>
+    );
+  } else if (error) {
+    contentState = (
+      <div className="p-6 border border-red-200 bg-red-50 rounded-md text-red-800">
+        <p className="font-semibold">Error loading animal data:</p>
+        <p className="mt-2">{error.message}</p>
+        <p className="mt-4">Please try refreshing the page or contact technical support.</p>
+      </div>
+    );
+  } else if (animals.length === 0) {
+    contentState = (
+      <div className="py-32 text-center text-gray-500">
+        No animals found in the database.
+      </div>
+    );
+  }
 
   return (
     <div className={cn("space-y-4", className)}>
-      {/* --- Removed Search and filter bar --- */}
-      {/* --- Removed Active filters display --- */}
-      
-      {/* Error display */}
-      {error && !isLoading && ( // Only show error if not loading
-        <div className="p-4 border border-red-200 bg-red-50 rounded-md text-red-800">
-          <p>Error loading animal data: {error.message}</p>
-          <p>Please try refreshing the page or contact support.</p>
+      {/* Optional: Add status message at the top */}
+      {!isLoading && !error && animals.length > 0 && (
+        <div className="text-sm text-gray-500">
+          Showing {animals.length} animals
         </div>
       )}
       
-      {/* Animal list */}
-      {isLoading ? (
-        <div className="py-32 text-center text-gray-500">
-          Loading animals...
-        </div>
-      ) : !error && animals.length === 0 ? ( // Show no animals message only if no error
-        <div className="py-32 text-center text-gray-500">
-          No animals found.
-        </div>
-      ) : !error && animals.length > 0 ? ( // Only render table if no error and animals exist
-        <div className="border rounded-md overflow-x-auto"> {/* Added overflow for smaller screens */}
+      {/* Error, loading, or empty state */}
+      {contentState}
+      
+      {/* Animal table - only render when we have animals and no errors */}
+      {!isLoading && !error && animals.length > 0 && (
+        <div className="border rounded-md overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                {/* Updated Table Heads based on new schema */}
                 <TableHead>ID</TableHead>
                 <TableHead>Tag ID</TableHead>
                 <TableHead>Species</TableHead>
@@ -173,7 +179,6 @@ const AnimalTrackingList: React.FC<AnimalTrackingListProps> = ({
                 <TableHead>Weight</TableHead>
                 <TableHead>Device ID</TableHead>
                 <TableHead>Last Updated</TableHead>
-                {/* Add other relevant columns like birth_date or notes if needed */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -181,17 +186,15 @@ const AnimalTrackingList: React.FC<AnimalTrackingListProps> = ({
                 <TableRow 
                   key={animal.id}
                   className={cn(
-                    "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" 
-                    // Removed alert styling
+                    "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
                   )}
                   onClick={() => handleAnimalClick(animal)}
                 >
-                  {/* Updated Table Cells based on new schema */}
                   <TableCell className="font-medium">{animal.id}</TableCell>
                   <TableCell>{animal.tag_id || 'N/A'}</TableCell>
                   <TableCell>{animal.species || 'N/A'}</TableCell>
                   <TableCell>{animal.sex || 'N/A'}</TableCell>
-                  <TableCell>{animal.weight !== null ? `${animal.weight} kg` : 'N/A'}</TableCell> {/* Added units */}
+                  <TableCell>{animal.weight !== null ? `${animal.weight} kg` : 'N/A'}</TableCell>
                   <TableCell>{animal.device_id || 'N/A'}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
@@ -199,15 +202,12 @@ const AnimalTrackingList: React.FC<AnimalTrackingListProps> = ({
                       {formatDate(animal.updated_at)}
                     </div>
                   </TableCell>
-                  {/* Removed Location, Status, Battery cells */}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
-      ) : null /* Render nothing if error occurred and handled above */}
-      
-      {/* --- Removed Results count --- */}
+      )}
     </div>
   );
 };
