@@ -16,7 +16,7 @@ interface AnimalFormData {
 
 interface Device {
   id: string;
-  name: string;
+  serial_number: string;
 }
 
 interface FormErrors {
@@ -54,9 +54,10 @@ const AnimalRegistrationForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [apiErrorMessage, setApiErrorMessage] = useState<string>("");
   const [availableDevices, setAvailableDevices] = useState<Device[]>([]);
+  const [deviceFetchError, setDeviceFetchError] = useState<string | null>(null);
 
   const speciesOptions: string[] = [
-  "Tiger","Elephant","Rhino","Red Panda","Leopard","Bear"
+    "Tiger","Elephant","Rhino","Red Panda","Leopard","Bear"
   ];
 
   useEffect(() => {
@@ -65,11 +66,32 @@ const AnimalRegistrationForm = () => {
 
   const getAvailableDevices = async () => {
     try {
+      setDeviceFetchError(null);
       const response = await axios.get('/api/devices');
-      console.log(response.data)
-      setAvailableDevices(response.data || []);
+      console.log("Device API response:", response.data);
+      
+      // Handle different response formats
+      let devices = [];
+      
+      if (Array.isArray(response.data)) {
+        // If response is already an array
+        devices = response.data;
+      } else if (response.data && typeof response.data === 'object') {
+        // Check if response has a 'devices' property
+        if (Array.isArray(response.data.devices)) {
+          devices = response.data.devices;
+        }
+      }
+      
+      if (devices.length === 0) {
+        console.warn("No devices found or invalid response format");
+        setDeviceFetchError("No available devices found");
+      }
+      
+      setAvailableDevices(devices);
     } catch (error) {
       console.error("Error fetching devices:", error);
+      setDeviceFetchError("Failed to load available devices");
     }
   };
 
@@ -247,13 +269,20 @@ const AnimalRegistrationForm = () => {
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm ${errors.device_id ? "border-red-300" : "border-gray-300"}`}
             >
               <option value="">-- Select a device --</option>
-              {availableDevices.map((device:any) => (
-                <option key={device.id} value={device.id}>
-                  {device.serial_number}
+              {availableDevices && availableDevices.length > 0 ? (
+                availableDevices.map((device) => (
+                  <option key={device.id} value={device.id}>
+                    {device.serial_number}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  {deviceFetchError || "Loading devices..."}
                 </option>
-              ))}
+              )}
             </select>
             {errors.device_id && <p className="text-sm text-red-600">{errors.device_id}</p>}
+            {deviceFetchError && <p className="text-sm text-amber-600">{deviceFetchError}</p>}
           </div>
 
           {/* Birth Date */}

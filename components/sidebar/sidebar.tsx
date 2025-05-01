@@ -120,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
     {icon: <Home size={20} />, label: "Register Animal", href: "/animal/register" },
     { icon: <Activity size={20} />, label: "Live Tracking", href: "/livetracking" },
     { icon: <BarChart2 size={20} />, label: "Analytics", href: "/analytics" },
-    { icon: <Bell size={20} />, label: "Alerts", href: "/alerts" }
+    // { icon: <Bell size={20} />, label: "Alerts", href: "/alerts" }
   ];
   
   // Logout item
