@@ -148,13 +148,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
         "flex items-center gap-3 px-4 h-16",
         collapsed ? "justify-center" : ""
       )}>
-        <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm">
-          <span role="img" aria-label="Wildlife">🦌</span>
-        </div>
+      
         
         {!collapsed && (
-          <h1 className="text-lg font-semibold tracking-tight">
-            Wildlife Tracker
+          <h1 className="pl-3 text-3xl font-bold tracking-tight">
+            Wild<span className='text-green-600'>Sight</span>
           </h1>
         )}
       </div>
